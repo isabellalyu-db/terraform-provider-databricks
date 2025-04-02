@@ -129,6 +129,28 @@ type ForEachTask struct {
 	Task        ForEachNestedTask `json:"task"`
 }
 
+type Subscription struct {
+	// Optional: Allows users to specify a custom subject line on the email sent
+	// to subscribers.
+	CustomSubject string `json:"custom_subject,omitempty"`
+	// When true, the subscription will not send emails.
+	Paused      bool                     `json:"paused,omitempty"`
+	Subscribers []SubscriptionSubscriber `json:"subscribers,omitempty"`
+}
+
+type SubscriptionSubscriber struct {
+	DestinationId string `json:"destination_id,omitempty"`
+	UserName      string `json:"user_name,omitempty"`
+}
+
+// Configures the Lakeview Dashboard job task type.
+type DashboardTask struct {
+	DashboardId  string        `json:"dashboard_id,omitempty"`
+	Subscription *Subscription `json:"subscription,omitempty"`
+	// The warehouse id to execute the dashboard with for the schedule
+	WarehouseId string `json:"warehouse_id,omitempty"`
+}
+
 type ForEachNestedTask struct {
 	TaskKey     string                `json:"task_key"`
 	Description string                `json:"description,omitempty"`
@@ -150,6 +172,7 @@ type ForEachNestedTask struct {
 	DbtTask         *DbtTask            `json:"dbt_task,omitempty" tf:"group:task_type"`
 	RunJobTask      *RunJobTask         `json:"run_job_task,omitempty" tf:"group:task_type"`
 	ConditionTask   *jobs.ConditionTask `json:"condition_task,omitempty" tf:"group:task_type"`
+	DashboardTask   *DashboardTask      `json:"dashboard_task,omitempty" tf:"group:task_type"`
 
 	EmailNotifications     *jobs.TaskEmailNotifications   `json:"email_notifications,omitempty" tf:"suppress_diff"`
 	WebhookNotifications   *jobs.WebhookNotifications     `json:"webhook_notifications,omitempty" tf:"suppress_diff"`
@@ -221,6 +244,7 @@ type JobTaskSettings struct {
 	JobClusterKey     string            `json:"job_cluster_key,omitempty" tf:"group:cluster_type"`
 	Libraries         []compute.Library `json:"libraries,omitempty" tf:"alias:library"`
 
+	DashboardTask   *DashboardTask      `json:"dashboard_task,omitempty" tf:"group:task_type"`
 	NotebookTask    *NotebookTask       `json:"notebook_task,omitempty" tf:"group:task_type"`
 	SparkJarTask    *SparkJarTask       `json:"spark_jar_task,omitempty" tf:"group:task_type"`
 	SparkPythonTask *SparkPythonTask    `json:"spark_python_task,omitempty" tf:"group:task_type"`
